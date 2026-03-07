@@ -100,7 +100,7 @@ Uvicorn
 Requests
 
 Python-dotenv
-
+###
 📂 Project Structure
 Movie-Recommendation-Using-AI
 │
@@ -115,6 +115,7 @@ Movie-Recommendation-Using-AI
 │   └── manifest.json
 │
 └── README.md
+
 ⚙ Installation
 1️⃣ Clone the Repository
 git clone https://github.com/govindchauhan-s/Movie-Recommendation-Using-AI.git
@@ -223,4 +224,4 @@ If you find this project useful, please star the repository ⭐ on GitHub to sup
 Govind Chauhan
 
 GitHub
-https://github.com/govindchauhan-s
+https://github.com/govindchauhan45
