@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>AI Movie Mood Recommender</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+</head>
+
+<body>
+  <div id="root"></div>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- PWA Meta Tags -->
+    <meta name="description" content="Discover perfect movies based on your current mood">
+    <meta name="theme-color" content="#764ba2">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="MovieMood">
+    <meta name="msapplication-TileColor" content="#667eea">
+    <meta name="msapplication-TileImage" content="./android-icon-144x144.png">
+    <meta name="msapplication-tap-highlight" content="no">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="./favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="./favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="./favicon-96x96.png">
+    
+    <!-- Apple Touch Icons -->
+    <link rel="apple-touch-icon" sizes="57x57" href="./apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="./apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="./apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="./apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="./apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="./apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="./apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="./apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="./apple-icon-180x180.png">
+    
+    <!-- Android Icons -->
+    <link rel="icon" type="image/png" sizes="192x192" href="./android-icon-192x192.png">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="./manifest.json">
+    
+    <title>🎬 Movie Mood Recommender</title>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: white;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .subtitle {
+            text-align: center;
+            color: rgba(255,255,255,0.9);
+            margin-bottom: 40px;
+            font-size: 1.2em;
+        }
+
+        /* PWA Install Button */
+        .install-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 20px;
+            border-radius: 50px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            display: none;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .install-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+        }
+
+        .offline-indicator {
+            position: fixed;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #e74c3c;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            display: none;
+            z-index: 1000;
+            animation: slideDown 0.3s ease;
+        }
+
+        .offline-indicator.online {
+            background: #27ae60;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translate(-50%, -100%);
+            }
+            to {
+                transform: translate(-50%, 0);
+            }
+        }
+
+        .mood-selector {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .mood-selector h2 {
+            text-align: center;
+            margin-bottom: 25px;
+            color: #333;
+            font-size: 1.8em;
+        }
+
+        .mood-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .mood-btn {
+            padding: 15px 20px;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .mood-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        .language-filter {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .language-filter h3 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .language-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .lang-btn {
+            padding: 10px 20px;
+            border: 2px solid #667eea;
+            border-radius: 25px;
+            background: white;
+            color: #667eea;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .lang-btn.active,
+        .lang-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .loading {
+            text-align: center;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .recommendations {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .recommendations h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #333;
+            font-size: 1.8em;
+        }
+
+        .movie-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .movie-card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .movie-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .movie-poster {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .no-poster {
+            width: 100%;
+            height: 300px;
+            background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2em;
+            margin-bottom: 15px;
+        }
+
+        .movie-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .movie-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .movie-rating {
+            background: #667eea;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-weight: bold;
+        }
+
+        .movie-plot {
+            color: #555;
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+
+        .movie-platforms {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .platform-tag {
+            background: #e9ecef;
+            color: #495057;
+            padding: 4px 8px;
+            border-radius: 8px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+
+        .error {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .error h2 {
+            color: #e74c3c;
+            margin-bottom: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+            
+            .mood-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .language-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .movie-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .install-btn {
+                bottom: 10px;
+                right: 10px;
+                padding: 12px 16px;
+                font-size: 0.9em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Offline Indicator -->
+    <div id="offline-indicator" class="offline-indicator">
+        You're offline. Some features may be limited.
+    </div>
+
+    <!-- PWA Install Button -->
+    <button id="install-btn" class="install-btn">
+        📱 Install App
+    </button>
+
+    <div class="container">
+        <h1>🎬 Movie Mood Recommender</h1>
+        <p class="subtitle">Discover perfect movies based on your current mood</p>
+
+        <div class="mood-selector">
+            <h2>What's Your Mood?</h2>
+            <div class="mood-grid">
+                <button class="mood-btn" onclick="selectMood('happy')">😊 Happy</button>
+                <button class="mood-btn" onclick="selectMood('sad')">😢 Sad</button>
+                <button class="mood-btn" onclick="selectMood('action')">⚡ Action</button>
+                <button class="mood-btn" onclick="selectMood('romantic')">💕 Romantic</button>
+                <button class="mood-btn" onclick="selectMood('scary')">😱 Scary</button>
+                <button class="mood-btn" onclick="selectMood('funny')">😂 Funny</button>
+                <button class="mood-btn" onclick="selectMood('adventurous')">🗺️ Adventurous</button>
+                <button class="mood-btn" onclick="selectMood('drama')">🎭 Drama</button>
+            </div>
+        </div>
+
+        <div class="language-filter">
+            <h3>Language Preference</h3>
+            <div class="language-buttons">
+                <button class="lang-btn active" onclick="selectLanguage('all')" data-lang="all">All Languages</button>
+                <button class="lang-btn" onclick="selectLanguage('english')" data-lang="english">English</button>
+                <button class="lang-btn" onclick="selectLanguage('hindi')" data-lang="hindi">Hindi</button>
+                <button class="lang-btn" onclick="selectLanguage('tamil')" data-lang="tamil">Tamil</button>
+            </div>
+        </div>
+
+        <div id="results"></div>
+    </div>
+
+    <script>
+        // Replace with your Render backend URL
+        const API_BASE_URL = 'https://moodmovierecbackend.onrender.com';
+        
+        let selectedMood = '';
+        let selectedLanguage = 'all';
+        let deferredPrompt;
+
+        // PWA Installation
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            document.getElementById('install-btn').style.display = 'block';
+        });
+
+        document.getElementById('install-btn').addEventListener('click', () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        console.log('User accepted the install prompt');
+                        document.getElementById('install-btn').style.display = 'none';
+                    }
+                    deferredPrompt = null;
+                });
+            }
+        });
+
+        // Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then((registration) => {
+                        console.log('✅ SW registered successfully:', registration);
+                    })
+                    .catch((registrationError) => {
+                        console.error('❌ SW registration failed:', registrationError);
+                    });
+            });
+        }
+
+        // Online/Offline Detection
+        const offlineIndicator = document.getElementById('offline-indicator');
+
+        function updateOnlineStatus() {
+            if (navigator.onLine) {
+                offlineIndicator.textContent = 'Back online!';
+                offlineIndicator.classList.add('online');
+                setTimeout(() => {
+                    offlineIndicator.style.display = 'none';
+                }, 3000);
+            } else {
+                offlineIndicator.textContent = 'You\'re offline. Some features may be limited.';
+                offlineIndicator.classList.remove('online');
+                offlineIndicator.style.display = 'block';
+            }
+        }
+
+        window.addEventListener('online', updateOnlineStatus);
+        window.addEventListener('offline', updateOnlineStatus);
+
+        function selectMood(mood) {
+            selectedMood = mood;
+            getRecommendations();
+        }
+
+        function selectLanguage(language) {
+            selectedLanguage = language;
+            
+            // Update UI
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`[data-lang="${language}"]`).classList.add('active');
+            
+            // Get new recommendations if mood is already selected
+            if (selectedMood) {
+                getRecommendations();
+            }
+        }
+
+        async function getRecommendations() {
+            const resultsDiv = document.getElementById('results');
+            
+            // Show loading
+            resultsDiv.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <h3>Finding perfect movies for your ${selectedMood} mood...</h3>
+                    <p>This may take a few seconds</p>
+                </div>
+            `;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/recommend`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        mood: selectedMood,
+                        language: selectedLanguage
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success && data.recommendations.length > 0) {
+                    displayRecommendations(data.recommendations);
+                    
+                    // Show notification if supported - Updated with proper icon paths
+                    if ('serviceWorker' in navigator && 'Notification' in window) {
+                        if (Notification.permission === 'granted') {
+                            navigator.serviceWorker.ready.then(registration => {
+                                registration.showNotification('New Recommendations!', {
+                                    body: `Found ${data.recommendations.length} movies for your ${selectedMood} mood`,
+                                    icon: './android-icon-192x192.png',
+                                    badge: './android-icon-72x72.png'
+                                });
+                            });
+                        }
+                    }
+                } else {
+                    showError('No movies found. Please try a different mood or language.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                if (!navigator.onLine) {
+                    showError('You\'re offline. Please check your internet connection and try again.');
+                } else {
+                    showError('Unable to get recommendations. Please try again.');
+                }
+            }
+        }
+
+        function displayRecommendations(movies) {
+            const resultsDiv = document.getElementById('results');
+            
+            const moviesHTML = movies.map(movie => `
+                <div class="movie-card">
+                    ${movie.poster ? 
+                        `<img src="${movie.poster}" alt="${movie.title}" class="movie-poster">` :
+                        `<div class="no-poster">🎬</div>`
+                    }
+                    <div class="movie-title">${movie.title}</div>
+                    <div class="movie-info">
+                        <span>${movie.year}</span>
+                        <span class="movie-rating">⭐ ${movie.rating}</span>
+                    </div>
+                    <div class="movie-plot">${movie.plot}</div>
+                    <div class="movie-platforms">
+                        ${movie.platforms.map(platform => 
+                            `<span class="platform-tag">${platform}</span>`
+                        ).join('')}
+                    </div>
+                </div>
+            `).join('');
+
+            resultsDiv.innerHTML = `
+                <div class="recommendations">
+                    <h2>🎬 Recommended Movies for Your ${selectedMood.charAt(0).toUpperCase() + selectedMood.slice(1)} Mood</h2>
+                    <div class="movie-grid">
+                        ${moviesHTML}
+                    </div>
+                </div>
+            `;
+        }
+
+        function showError(message) {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = `
+                <div class="error">
+                    <h2>Oops! Something went wrong</h2>
+                    <p>${message}</p>
+                </div>
+            `;
+        }
+
+        // Request notification permission
+        if ('Notification' in window) {
+            Notification.requestPermission();
+        }
+    </script>
+</body>
+</html>
